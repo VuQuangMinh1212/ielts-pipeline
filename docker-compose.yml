@@ -1,32 +1,4 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    container_name: ielts-app
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/data
-      - ./:/app
-    env_file:
-      - .env
-    depends_on:
-      - worker
-
-  worker:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    container_name: ielts-worker
-    command: ["python", "-u", "app/worker.py"]
-    volumes:
-      - ./data:/data
-      - ./:/app
-    env_file:
-      - .env
-
-  # Training service (GPU required)
   trainer:
     build:
       context: .
@@ -45,10 +17,7 @@ services:
         "1",
       ]
     volumes:
-      - ./data:/app/data
       - ./models:/app/models
-      - ./config:/app/config
-      - ./app:/app/app
     environment:
       - CUDA_VISIBLE_DEVICES=0
       - PYTHONUNBUFFERED=1
@@ -56,17 +25,15 @@ services:
     profiles:
       - training
 
-  # Inference service (vLLM)
   inference:
     build:
-      context: ./docker
-      dockerfile: Dockerfile.inference
+      context: .
+      dockerfile: docker/Dockerfile.inference
     container_name: ielts-inference
     ports:
       - "8001:8001"
     volumes:
       - ./models:/app/models
-      - ./:/app
     env_file:
       - .env
     deploy:
