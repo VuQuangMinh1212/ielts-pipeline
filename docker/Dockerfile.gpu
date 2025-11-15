@@ -1,0 +1,61 @@
+# GPU-enabled Dockerfile for training
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+
+# Install Python and minimal dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.10 \
+    python3-pip \
+    git \
+    wget \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Upgrade pip
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+WORKDIR /app
+
+# Copy only requirements first for better caching
+COPY requirements.txt .
+
+# Fix NumPy and PyArrow versions first
+RUN pip3 install --no-cache-dir \
+    "numpy<2.0" \
+    "pyarrow>=14.0.0"
+
+# Install PyTorch with CUDA support
+RUN pip3 install --no-cache-dir \
+    torch==2.0.1 \
+    torchvision==0.15.2 \
+    torchaudio==2.0.2 \
+    --index-url https://download.pytorch.org/whl/cu118
+
+# Install training dependencies one by one to avoid conflicts
+RUN pip3 install --no-cache-dir \
+    transformers==4.35.0 \
+    peft==0.7.1 \
+    trl==0.7.4 \
+    datasets==2.14.6 \
+    accelerate==0.24.1 \
+    scipy \
+    sentencepiece \
+    protobuf
+
+# Install bitsandbytes separately (Windows compatibility)
+RUN pip3 install --no-cache-dir bitsandbytes==0.41.3 || \
+    pip3 install --no-cache-dir bitsandbytes-windows || \
+    echo "Warning: bitsandbytes installation failed, will use FP16"
+
+# Copy application code
+COPY . /app
+
+# Create necessary directories
+RUN mkdir -p /app/models /app/data /app/config
+
+# Default command
+CMD ["python3", "-u", "app/train_qlora.py", "--model", "qwen", "--epochs", "3"]

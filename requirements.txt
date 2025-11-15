@@ -1,0 +1,30 @@
+# Core API dependencies
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+pydantic
+python-dotenv
+google-genai==0.1.*
+
+# ML Training dependencies (QLoRA fine-tuning)
+torch>=2.0.0
+transformers>=4.35.0
+peft>=0.7.0
+trl>=0.7.0
+datasets>=2.14.0
+bitsandbytes>=0.41.0
+accelerate>=0.24.0
+scipy
+
+# Inference backends
+vllm>=0.2.0  # Fast inference with quantization
+llama-cpp-python  # CPU inference with GGUF models
+
+# Quantization libraries (optional)
+auto-gptq  # GPTQ quantization
+autoawq  # AWQ quantization
+
+# Utilities
+sentencepiece
+protobuf

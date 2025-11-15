@@ -1,0 +1,46 @@
+{
+  "training": {
+    "model_name": "qwen",
+    "base_models": {
+      "qwen": "Qwen/Qwen-1.5B",
+      "phi2": "microsoft/phi-2",
+      "gemma": "google/gemma-2b"
+    },
+    "output_dir": "./models/ielts-finetuned",
+    "dataset_path": "./data/ielts_training_data.jsonl",
+    "num_epochs": 3,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 2e-4,
+    "max_seq_length": 512,
+    "lora_config": {
+      "r": 8,
+      "lora_alpha": 16,
+      "lora_dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ]
+    },
+    "quantization": {
+      "load_in_4bit": true,
+      "bnb_4bit_quant_type": "nf4",
+      "bnb_4bit_compute_dtype": "float16",
+      "bnb_4bit_use_double_quant": true
+    }
+  },
+  "deployment": {
+    "inference_backend": "vllm",
+    "model_path": "./models/ielts-finetuned",
+    "quantization_format": "4bit",
+    "max_tokens": 512,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "gpu_memory_utilization": 0.9
+  }
+}

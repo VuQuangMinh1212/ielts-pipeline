@@ -1,0 +1,26 @@
+# Inference Dockerfile with vLLM support
+FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
+
+# Install Python
+RUN apt-get update && apt-get install -y \
+    python3.11 \
+    python3-pip \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install vLLM and dependencies
+RUN pip install --no-cache-dir \
+    vllm \
+    transformers \
+    fastapi \
+    uvicorn[standard]
+
+# Copy models and application
+COPY . .
+
+EXPOSE 8001
+
+# Start vLLM server
+CMD ["python3", "-u", "app/inference.py", "--backend", "vllm"]
