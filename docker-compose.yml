@@ -1,6 +1,8 @@
 services:
   app:
-    build: ./docker
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     container_name: ielts-app
     ports:
       - "8000:8000"
@@ -13,7 +15,9 @@ services:
       - worker
 
   worker:
-    build: ./docker
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     container_name: ielts-worker
     command: ["python", "-u", "app/worker.py"]
     volumes:
