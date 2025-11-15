@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.0.1-cuda11.8-cudnn8-runtime
+FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
 
 ENV PYTHONUNBUFFERED=1
 
@@ -22,12 +22,8 @@ RUN pip install --no-cache-dir \
 COPY app/ ./app/
 COPY config/ ./config/
 COPY data/ ./data/
-COPY models/ ./models/ \
-    pip3 install --no-cache-dir bitsandbytes-windows || \
-    echo "Warning: bitsandbytes installation failed, will use FP16"
 
-# Copy application code
-COPY . /app
+RUN mkdir -p ./models
 
 # Create necessary directories
 RUN mkdir -p /app/models /app/data /app/config
