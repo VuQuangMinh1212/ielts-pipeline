@@ -5,23 +5,25 @@ services:
       dockerfile: docker/Dockerfile.gpu
     container_name: ielts-trainer
     command:
-      [
-        "python3",
-        "-u",
-        "app/train_qlora.py",
-        "--model",
-        "qwen",
-        "--epochs",
-        "3",
-        "--batch-size",
-        "1",
-      ]
+      - python3
+      - -u
+      - app/train_qlora.py
+      - --model
+      - qwen
+      - --epochs
+      - "3"
+      - --batch-size
+      - "1"
     volumes:
       - ./models:/app/models
     environment:
       - CUDA_VISIBLE_DEVICES=0
       - PYTHONUNBUFFERED=1
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     profiles:
       - training
 
@@ -40,8 +42,6 @@ services:
       resources:
         reservations:
           devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+            - capabilities: [gpu]
     profiles:
       - inference

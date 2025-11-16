@@ -2,20 +2,16 @@ FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
+RUN apt-get update && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir \
-    vllm \
-    transformers \
-    fastapi \
-    uvicorn[standard]
+COPY requirements.inference.txt .
+
+RUN pip install --no-cache-dir -r requirements.inference.txt
 
 COPY app/ ./app/
-COPY models/ ./models/
 
 EXPOSE 8001
 

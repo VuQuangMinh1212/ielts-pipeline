@@ -2,31 +2,19 @@ FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
+RUN apt-get update && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir \
-    transformers==4.35.0 \
-    peft==0.7.1 \
-    trl==0.7.4 \
-    datasets==2.14.6 \
-    accelerate==0.24.1 \
-    bitsandbytes==0.41.3 \
-    scipy \
-    sentencepiece \
-    protobuf
+COPY requirements.training.txt .
+
+RUN pip install --no-cache-dir -r requirements.training.txt
 
 COPY app/ ./app/
 COPY config/ ./config/
 COPY data/ ./data/
 
-RUN mkdir -p ./models
+RUN mkdir -p /app/models
 
-# Create necessary directories
-RUN mkdir -p /app/models /app/data /app/config
-
-# Default command
-CMD ["python3", "-u", "app/train_qlora.py", "--model", "qwen", "--epochs", "3"]
+CMD ["python3", "-u", "app/train_qlora.py"]

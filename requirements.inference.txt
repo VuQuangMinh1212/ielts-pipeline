@@ -1,0 +1,7 @@
+vllm
+transformers
+fastapi
+uvicorn[standard]
+sentencepiece
+protobuf
+python-dotenv
