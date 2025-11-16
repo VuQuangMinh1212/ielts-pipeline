@@ -23,7 +23,7 @@ class IELTSModelTrainer:
     
     # Supported models optimized for 4GB GPU
     SUPPORTED_MODELS = {
-        "qwen": "Qwen/Qwen-1.5B",
+        "qwen": "Qwen/Qwen1.5-1.8B",
         "phi2": "microsoft/phi-2",
         "gemma": "google/gemma-2b",
     }
